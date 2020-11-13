@@ -143,4 +143,11 @@ class SystemSimulator extends Thread
     {
         jobsRemainToBeSubmitted = false;
     }
+
+    public void doIO(int msec)
+    {
+        System.out.println("SYSIM Job is working with I/O");
+        try{ sleep(msec); } catch(Exception e){e.printStackTrace();}
+        System.out.println("SYSIM Job has finished with I/O");
+    }
 }

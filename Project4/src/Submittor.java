@@ -56,12 +56,11 @@ class Submittor extends Thread
             String temparr[] = jobDesc.split(" ");
             String id; // ID/name of the Job (simulated process) 
             int delay; // msec delay until this Job is submitted to the kernel
-            String burstDescription;  // The description of that Job.  (For FCFS this will be a single integer token)
+            String CPUburst, IOburst;  // The description of that Job.  (For FCFS this will be a single integer token)
     	
             //Provide code that will set id, delay, and burstDescription from jobDesc.
             id = "Job#"+temparr[0];
             delay = Integer.parseInt(temparr[1]);
-            burstDescription = temparr[2];
             try 
             {
     		sleep( delay ); // wait until submission
@@ -71,9 +70,39 @@ class Submittor extends Thread
     		System.err.println("Submittor should never be interrupted");
     		e.printStackTrace();
             }
+            for (int i = 2; i<temparr.length;i++)
+            {
+                if (i%2 == 0)
+                {
+                    if(temparr.length>i+2)
+                    {
+                        CPUburst = temparr[i];
+                        mySystem.AddNewProcess(id+"-CPUBurst before IO", CPUburst, myWorkCreator.createWork(id));
+                    }
+                    else
+                    {
+                        CPUburst = temparr[i];
+                        mySystem.AddNewProcess(id+"-Final CPUBurst", CPUburst, myWorkCreator.createWork(id));
+                    }
+                }
+                else
+                {
+                    IOburst = temparr[i];
+                    try 
+                    {
+                        mySystem.doIO(Integer.parseInt(IOburst));
+                        //System.out.println(id+" is waiting on I/O operations");
+                        //sleep( Integer.parseInt(IOburst) ); // wait until IOburst finishes
+                    }
+                    catch (Exception e) 
+                    {
+                        System.err.println("Submittor should never be interrupted");
+                        e.printStackTrace();
+                    }
+                }
+            }
             // create jobs and add them to the Operating System            
-            //System.out.println("SUBMI sending "+id);
-            mySystem.AddNewProcess(id, burstDescription, myWorkCreator.createWork(id));
+            System.out.println("SUBMI sending "+id);
         }
         mySystem.noMoreJobsToSubmit(); // let system know that no more jobs are coming
     }

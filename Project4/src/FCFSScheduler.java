@@ -20,7 +20,7 @@ public class FCFSScheduler extends Scheduler
     public void add( Job J )
     {
         readyq.add(J);        
-        //System.out.println("FCFSS add "+J.getNameOf());
+        System.out.println("FCFSS add "+J.getNameOf());
     }
 
     /**
@@ -35,7 +35,7 @@ public class FCFSScheduler extends Scheduler
             i++;
         }
         readyq.remove(i);
-        //System.out.println("FCFSS remove "+J.getNameOf());
+        System.out.println("FCFSS remove "+J.getNameOf());
     }
 
     /**
@@ -60,7 +60,7 @@ public class FCFSScheduler extends Scheduler
      */
     public boolean makeRun()
     {
-        //System.out.println("FCFSS MakeRun");
+        System.out.println("FCFSS MakeRun");
         //Place code here that gets the next Job from the ready queue and invokes start() on it
         if(!hasJobsQueued())
             return false;
@@ -80,14 +80,13 @@ public class FCFSScheduler extends Scheduler
     {
         if (hasRunningJob()) 
             return;
-        //System.out.println("TO_DO: blockTilThereIsAJob not yet implemented");
         //Place code here that will cause the calling thread to block until the ready queue contains a Job
         while(readyq.size()==0)
         {
             try
             {
                 Thread.currentThread().sleep(100);
-                //System.out.println("FCFSS Wait");
+                System.out.println("FCFSS Wait");
             }
             catch (Exception e)
             {

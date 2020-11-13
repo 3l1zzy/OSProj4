@@ -5,7 +5,7 @@
 public class JobWorker implements JobWorkable
 {
     private String name, output;
-    private int x, y;
+    private int x, y, count=1;
     JobWorker(String n)
     {
         this.name = n;
@@ -16,6 +16,8 @@ public class JobWorker implements JobWorkable
     }
     public void doWork()
     {
+        System.out.println("JOB   "+Thread.currentThread().getName()+" is working on task "+count);
+        count++;
         x = (int)(Math.random()*100);
         y = (int)(Math.random()*100);
         output = x+" * "+y+" = "+(x*y)+"\t";
