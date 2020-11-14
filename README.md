@@ -1,0 +1,16 @@
+I am excited to say that there are no errors in this project!
+
+Eleven files included:
+- FCFSScheduler.java - First Come First Serve scheduler. I added the ConcurrentLinkedQueue<Job> inputq to hold all of the jobs currently doing IO operations. I changed HasJobsQueued to include the inputq. I also implemented the abstract methods I added in the Scheduler parent class: startIO (which adds the given job to the input queue), finishIO (which removes the given job from the inputq, consumes one of the bursts from the linked list, and adds the job back into the readyq), and hasReadyJobs (which is a boolean that tests if there are jobs in the readyq).
+- GanntChart.java - This class is what is called to actually output the Gannt chart as output on the terminal/console. I left the constructor for the GanntChart object empty, as I was able to accomplish everything elsewhere. The only method I really worked with was the print() method. I added in the header and footer (at the time they separated the chart from debugging output) the column titles, and a loop to go through all of the events saved and print them in neat columns. The start and end times get the systemStartTime subtracted from them so the timestamps are relative and not several digits long.
+- Job.java - changed the BurstTime variavle to a LinkedList<Integer> burstTimes to handle the IO and CPU bursts, added method getBurstsLeft that returns the current size of the burst linked list, changed run to do cpu work and then toggle between doIO and doCPU until the burstTimes linked list was depleated, added consumeBurst to remove the top burst from the linked list, added doIO to create and start the IODevice thread for the IO work, and moved the old run code to a doCPU method which at the end also consumes a burst and records the burst to the gaant chart (either as a cpu burst before IO or as a final CPU burst).
+- JobWorkable.java - Job Workable was a given file that was not changed. It is used as a base to be inherited by my class JobWorker.
+- JobWorker.java - added a print statement and a counter to show how many "tasks" the job has done during it's cpu burst.
+- RunScheduler.java - Given file that was not changed. This is the file with method main and starts off the entire program.
+- Scheduler.java - Added abstract classes startIO(Job j), finishIO(Job j), and hasReadyJobs();
+- Submittor.java - This is the class that reads from the input file and sends all of the job components to the SystemSimulator to be created into jobs and executed. The run method was edited to handle a LinkedList<Integer> of burst times to handle the cpu and IO bursts in one place.
+- WorkFactory.java - In this file, I just created a JobWorker  object to be returned.
+- SystemSimulator.java - This file is what has the kernel and job thread reentrant lock that is handed back and forth. I added the doIO method that does the actual sleeping (in place of IO action) for the duration of the IO burst).
+- IODevice.java - A newly made class that handles the IO actions. It calls FCFSScheduler's startIO, prints that IO work is being done, calls SystemSimulator's doIO, and the schedulers finishIO.
+
+The base code of this project was made by Professor Matt Evett. The assignment is to add/edit the existing code to make the program work according to the rubric.
