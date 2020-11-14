@@ -1,5 +1,5 @@
 import java.util.concurrent.locks.Condition;
-
+import java.util.*;
 /**
  * <p>Title: Job</p>
  * <p>Description: </p>
@@ -23,7 +23,7 @@ class Job extends Thread
         When we introduce time-slicing, the Job can be use this to suspend
         itself, passing control back to the OS simulator.*/
   
-    private final int burstTime; // job burst time
+    private final LinkedList<Integer> burstTimes; // job burst time
     private final String name; // name of job
   
     private volatile boolean shouldRun = false; // true if job should be running
@@ -36,13 +36,13 @@ class Job extends Thread
      * the CPU burst duration.  In a later version of this program we'll augment
      * the descriptors to allow for a sequence of CPU and IO burst lengths.
      */
-    public Job(String burstDescriptor, SystemSimulator s, String name, JobWorkable workToDo) 
+    public Job(LinkedList<Integer> burstDescriptors, SystemSimulator s, String name, JobWorkable workToDo) 
     {
         // Initialize stuff
         myOS = s;
         myCondition = s.getSingleThreadMutex().newCondition();
     
-        burstTime = Integer.parseInt( burstDescriptor );
+        burstTimes = burstDescriptors;
         work = workToDo;
     
         this.name = name;
@@ -61,7 +61,7 @@ class Job extends Thread
      */
     protected int getBurstTime()
     {
-        return( burstTime );
+        return( burstTimes.getFirst() );
     }
 
     public Condition getMyCondition() 
@@ -105,7 +105,7 @@ class Job extends Thread
         //Should block here until the OS blocks itself on this Job's Condition
         myOS.getSingleThreadMutex().lock();
         startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis()-startTime < burstTime) 
+        while (System.currentTimeMillis()-startTime < burstTimes.getFirst()) 
         {// Not yet exhausted my run-time
             work.doWork(); // This should return in only a few milliseconds
             try 
