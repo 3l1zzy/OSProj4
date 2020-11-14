@@ -16,7 +16,7 @@ public class JobWorker implements JobWorkable
     }
     public void doWork()
     {
-        System.out.println("JOB   "+Thread.currentThread().getName()+" is working on task "+count);
+        System.out.println(Thread.currentThread().getName()+" is working on task "+count);
         count++;
         x = (int)(Math.random()*100);
         y = (int)(Math.random()*100);

@@ -63,6 +63,11 @@ class Job extends Thread
     {
         return( burstTimes.getFirst() );
     }
+    
+    protected int getBurstsLeft()  
+    {
+        return burstTimes.size();
+    }
 
     public Condition getMyCondition() 
     {
@@ -103,7 +108,31 @@ class Job extends Thread
     public void run()
     {
         //Should block here until the OS blocks itself on this Job's Condition
-        myOS.getSingleThreadMutex().lock();
+        myOS.getSingleThreadMutex().lock();	
+        doCPU();
+        while(burstTimes.size()>1)
+        {
+        //System.out.println("JOB   Burst size "+burstTimes.size()+" in loop");
+            doIO();
+            doCPU();
+        }
+        exit();  //exit needs to signal the Condition, and release the lock
+    }
+    
+    public void consumeBurst()
+    {
+        burstTimes.pop();
+        //System.out.println("JOB   Burst size "+burstTimes.size());
+    }
+    
+    public void doIO()
+    {
+        Thread io = new Thread(new IODevice(this));
+        io.start();
+    }
+  
+    public void doCPU()
+    {
         startTime = System.currentTimeMillis();
         while (System.currentTimeMillis()-startTime < burstTimes.getFirst()) 
         {// Not yet exhausted my run-time
@@ -117,10 +146,13 @@ class Job extends Thread
                 System.out.println(""+name+" is interrupted, hopefully only by TimeSlicer");
                 e.printStackTrace();
             }
-        }		  
-        exit();  //exit needs to signal the Condition, and release the lock
-    }
-  
+        }	
+        consumeBurst();
+        if(burstTimes.size()>1)
+            myOS.chart.recordEvent( startTime, System.currentTimeMillis(), name+"-CPU Burst Before IO" );
+        else             
+            myOS.chart.recordEvent( startTime, System.currentTimeMillis(), name+"-Final CPU Burst" );    }
+
     /*
      * should be last instruction in run(). Exit should eventually invoke myOS.exit();
      */
